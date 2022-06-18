@@ -9,15 +9,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AAC_FullContentApp">
-
-
+        <activity
+            android:name=".NavigationDrawerActivity"
+            android:exported="false"
+            android:label="@string/title_activity_navigation_drawer"
+            android:theme="@style/Theme.AAC_FullContentApp.NoActionBar" />
         <activity
             android:name=".CameraActivity"
             android:exported="false" />
         <activity
             android:name=".NoteListActivity"
-            android:exported="true"
-            android:label="@string/app_name">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,8 +28,7 @@
         </activity>
         <activity
             android:name=".NoteActivity"
-            android:exported="true"
-            android:label="@string/app_name"></activity>
+            android:exported="true"/>
     </application>
 
 </manifest>
