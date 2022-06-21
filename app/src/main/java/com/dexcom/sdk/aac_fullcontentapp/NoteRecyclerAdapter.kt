@@ -33,7 +33,9 @@ class NoteRecyclerAdapter: RecyclerView.Adapter<NoteRecyclerAdapter.ViewHolder> 
           textTitle = itemView.findViewById<TextView>(R.id.text_title)
             itemView.setOnClickListener(View.OnClickListener { view ->
                 run {
-                    val intent = Intent(context, NoteActivity::class.java)
+
+                   val intent = Intent(context, NoteActivity::class.java)
+                    //(context as NavigationDrawerActivity).navController.navigate(R.id.action_nav_home_to_nav_gallery)
                     intent.putExtra(NOTE_POSITION, adapterPosition)
                     context.startActivity(intent)
                 }
