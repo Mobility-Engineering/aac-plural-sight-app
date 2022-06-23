@@ -9,6 +9,7 @@ import java.util.ArrayList
 class DataManager private constructor() {
     private val mCourses: MutableList<CourseInfo> = ArrayList()
     private val mNotes: MutableList<NoteInfo> = ArrayList()
+    var currentlyDisplayedNote = 0
     val currentUserName: String
         get() = "Jim Wilson"
     val currentUserEmail: String

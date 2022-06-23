@@ -23,13 +23,13 @@
     <include layout="@layout/content_navigation_drawer" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:contentDescription="@string/button_to_add_a_note"
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/button_to_add_a_note"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_dialog_email" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

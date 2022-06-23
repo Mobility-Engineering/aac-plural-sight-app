@@ -24,13 +24,12 @@ class NoteListActivity : AppCompatActivity() {
     private var noteRecyclerAdapter: NoteRecyclerAdapter? = null
     private lateinit var adapterNotes: ArrayAdapter<NoteInfo>
     private lateinit var binding: ActivityNoteList2Binding
-    private lateinit var launcher: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         //binding = DataBindingUtil.setContentView(this, R.layout.activity_note_list2)
 
         binding = ActivityNoteList2Binding.inflate(layoutInflater)
         setContentView(binding.root)
-        var fab = binding.floatingActionButton
+        val fab = binding.floatingActionButton
         super.onCreate(savedInstanceState)
       initializeDisplayContent()
         fab.setOnClickListener {  view ->
