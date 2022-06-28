@@ -8,9 +8,9 @@ import java.util.ArrayList
 class CourseInfo : Parcelable {
     val courseId: String?
     val title: String
-    val modules: List<ModuleInfo>
+    val modules: List<ModuleInfo?>?
 
-    constructor(courseId: String?, title: String, modules: List<ModuleInfo>) {
+    constructor(courseId: String?, title: String, modules: List<ModuleInfo?>?) {
         this.courseId = courseId
         this.title = title
         this.modules = modules
@@ -19,23 +19,30 @@ class CourseInfo : Parcelable {
     private constructor(source: Parcel) {
         courseId = source.readString()
         title = source.readString()!!
-        modules = ArrayList()
-        source.readTypedList(modules, ModuleInfo.CREATOR)
+        modules = ArrayList<ModuleInfo?>()
+        //this is a list that can be nullable
+        modules?.let {
+            source.readTypedList(modules, ModuleInfo.CREATOR)
+        }
     }
 
-    var modulesCompletionStatus: BooleanArray
+    var modulesCompletionStatus: BooleanArray?
         get() {
-            val status = BooleanArray(modules.size)
-            for (i in modules.indices) status[i] = modules[i].isComplete
+            val status = modules?.let { BooleanArray(it.size) }
+            for (i in modules?.indices!!) modules?.get(i)?.let { status?.set(i, it.isComplete) }
             return status
         }
         set(status) {
-            for (i in modules.indices) modules[i].isComplete = status[i]
+            for (i in modules?.indices!!) modules?.get(i)?.isComplete = status?.get(i) == true
         }
 
     fun getModule(moduleId: String): ModuleInfo? {
-        for (moduleInfo in modules) {
-            if (moduleId == moduleInfo.moduleId) return moduleInfo
+        if (modules != null) {
+            for (moduleInfo in modules) {
+                if (moduleInfo != null) {
+                    if (moduleId == moduleInfo.moduleId) return moduleInfo
+                }
+            }
         }
         return null
     }
