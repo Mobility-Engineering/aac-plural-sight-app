@@ -1,9 +1,10 @@
 package com.dexcom.sdk.aac_fullcontentapp
 
 
-import com.dexcom.sdk.aac_fullcontentapp.CourseInfo
-import com.dexcom.sdk.aac_fullcontentapp.NoteInfo
-import com.dexcom.sdk.aac_fullcontentapp.DataManager
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
+import com.dexcom.sdk.aac_fullcontentapp.database.NoteKeeperDatabaseContract.*
+import com.dexcom.sdk.aac_fullcontentapp.database.NoteKeeperOpenHelper
 import java.util.ArrayList
 
 class DataManager private constructor() {
@@ -222,10 +223,75 @@ class DataManager private constructor() {
             get() {
                 if (ourInstance == null) {
                     ourInstance = DataManager()
-                    ourInstance!!.initializeCourses()
-                    ourInstance!!.initializeExampleNotes()
+                    //ourInstance!!.initializeCourses()
+                    //ourInstance!!.initializeExampleNotes()
                 }
                 return ourInstance
             }
+    }
+
+    fun createNewNote(course: CourseInfo?, noteTitle: String?, noteText: String?): Int {
+        val index = createNewNote()
+        val note: NoteInfo = notes[index]
+        note.course = course
+        note.title = noteTitle
+        note.text = noteText
+        return index
+    } //endregion
+
+    fun loadFromDatabase(dbHelper: NoteKeeperOpenHelper) {
+        val db: SQLiteDatabase = dbHelper.getReadableDatabase()
+        val courseColumns = arrayOf<String>(
+            CourseInfoEntry.COLUMN_COURSE_ID,
+            CourseInfoEntry.COLUMN_COURSE_TITLE
+        )
+        val courseCursor = db.query(
+            CourseInfoEntry.TABLE_NAME, courseColumns,
+            null, null, null, null, CourseInfoEntry.COLUMN_COURSE_TITLE.toString() + " DESC"
+        )
+        loadCoursesFromDatabase(courseCursor)
+        val noteColumns = arrayOf<String>(
+            NoteInfoEntry.COLUMN_NOTE_TITLE,
+            NoteInfoEntry.COLUMN_NOTE_TEXT,
+            NoteInfoEntry.COLUMN_COURSE_ID
+        )
+        val noteOrderBy: String =
+            NoteInfoEntry.COLUMN_COURSE_ID.toString() + "," + NoteInfoEntry.COLUMN_NOTE_TITLE
+        val noteCursor = db.query(
+            NoteInfoEntry.TABLE_NAME, noteColumns,
+            null, null, null, null, noteOrderBy
+        )
+        loadNotesFromDatabase(noteCursor)
+    }
+
+    private fun loadNotesFromDatabase(cursor: Cursor) {
+        val noteTitlePos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE)
+        val noteTextPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT)
+        val courseIdPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID)
+        //val dm = com.dexcom.sdk.aac_fullcontentapp.sandbox.DataManager.instance
+        mNotes.clear()
+        while (cursor.moveToNext()) {
+            val noteTitle = cursor.getString(noteTitlePos)
+            val noteText = cursor.getString(noteTextPos)
+            val courseId = cursor.getString(courseIdPos)
+            val noteCourse: CourseInfo? = getCourse(courseId)
+            val note = NoteInfo(noteCourse, noteTitle, noteText)
+            mNotes.add(note)
+        }
+        cursor.close()
+    }
+
+    private fun loadCoursesFromDatabase(cursor: Cursor) {
+        val courseIdPos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID)
+        val courseTitlePos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_TITLE)
+        //val dm = com.dexcom.sdk.aac_fullcontentapp.sandbox.DataManager.instance
+        mCourses.clear()
+        while (cursor.moveToNext()) {
+            val courseId = cursor.getString(courseIdPos)
+            val courseTitle = cursor.getString(courseTitlePos)
+            val course = CourseInfo(courseId, courseTitle, null)
+            mCourses.add(course)
+        }
+        cursor.close()
     }
 }
